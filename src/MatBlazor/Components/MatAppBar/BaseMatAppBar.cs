@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatAppBar
+namespace MatBlazor
 {
-    public class BaseMatAppBar : BaseMatComponent
+    /// <summary>
+    /// Acts as a container for items such as application title, navigation icon, and action items.
+    /// </summary>
+    public class BaseMatAppBar : BaseMatDomComponent
     {
         [Parameter]
         public bool Short { get; set; }
@@ -28,7 +26,7 @@ namespace MatBlazor.Components.MatAppBar
         protected async override Task OnFirstAfterRenderAsync()
         {
             await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matAppBar.init", Ref);
+            await JsInvokeAsync<object>("matBlazor.matAppBar.init", Ref);
         }
     }
 }

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatSlideToggle
+namespace MatBlazor
 {
-    public class BaseMatSlideToggle : BaseMatComponent
+    /// <summary>
+    /// Component for on/off control that can be toggled via clicking or dragging.
+    /// </summary>
+    public class BaseMatSlideToggle : BaseMatDomComponent
     {
         public BaseMatSlideToggle()
         {
@@ -21,13 +19,13 @@ namespace MatBlazor.Components.MatSlideToggle
         private bool _checked;
 
 
-        protected void OnChangedHandler(UIChangeEventArgs e)
+        protected void OnChangedHandler(ChangeEventArgs e)
         {
             Checked = (bool) e.Value;
         }
 
         [Parameter]
-        public Action<bool> CheckedChanged { get; set; }
+        public EventCallback<bool> CheckedChanged { get; set; }
 
         [Parameter]
         public string Label { get; set; }
@@ -44,7 +42,7 @@ namespace MatBlazor.Components.MatSlideToggle
                 if (_checked != value)
                 {
                     _checked = value;
-                    CheckedChanged?.Invoke(value);
+                    CheckedChanged.InvokeAsync(value);
                 }
             }
         }
@@ -52,7 +50,7 @@ namespace MatBlazor.Components.MatSlideToggle
         protected async override Task OnFirstAfterRenderAsync()
         {
             await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matSlideToggle.init", Ref);
+            await JsInvokeAsync<object>("matBlazor.matSlideToggle.init", Ref);
         }
     }
 }

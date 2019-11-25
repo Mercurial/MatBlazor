@@ -1,28 +1,43 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatMenu
+namespace MatBlazor
 {
-    public class BaseMatMenu : BaseMatComponent
+    /// <summary>
+    /// Menus display a list of choices on a transient sheet of material.
+    /// </summary>
+    public class BaseMatMenu : BaseMatDomComponent
     {
-        protected ElementRef MdcMenu;
         private bool _opened;
+        private bool _menuOpen;
 
 
-        public async Task OpenAsync(ElementRef anchorElement)
+        public BaseMatMenu()
         {
-            await Js.InvokeAsync<object>("matBlazor.matMenu.open", MdcMenu, anchorElement);
+            ClassMapper.Add("mdc-menu mdc-menu-surface");
+        }
+
+        [Parameter]
+        public RenderFragment ChildContent { get; set; }
+
+
+        [Parameter]
+        public ForwardRef TargetForwardRef { get; set; }
+
+        public async Task OpenAsync(ElementReference anchorElement)
+        {
+            await JsInvokeAsync<object>("matBlazor.matMenu.open", Ref, anchorElement);
+        }
+
+        public async Task OpenAsync()
+        {
+            await OpenAsync(TargetForwardRef.Current);
         }
 
         protected async override Task OnFirstAfterRenderAsync()
         {
             await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matMenu.init", MdcMenu);
+            await JsInvokeAsync<object>("matBlazor.matMenu.init", Ref);
         }
     }
 }

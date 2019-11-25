@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatList
+namespace MatBlazor
 {
-    public class BaseMatList : BaseMatComponent
+    /// <summary>
+    /// Lists present multiple line items vertically as a single continuous element. 
+    /// </summary>
+    public class BaseMatList : BaseMatDomComponent
     {
-        [Parameter]
-        protected RenderFragment ChildContent { get; set; }
+        private int _selectedIndex;
 
         [Parameter]
-        protected bool SingleSelection { get; set; }
+        public RenderFragment ChildContent { get; set; }
 
         [Parameter]
-        protected bool TwoLine { get; set; }
+        public bool SingleSelection { get; set; }
+
+        [Parameter]
+        public bool TwoLine { get; set; }
 
         public BaseMatList()
         {
@@ -26,10 +26,33 @@ namespace MatBlazor.Components.MatList
                 .If("mdc-list--two-line", () => TwoLine);
         }
 
+        /// <summary>
+        /// Gets the index of the selected item in the list.
+        /// </summary>
+        /// <returns>The index.</returns>
+        public async Task<int> GetSelectedIndex()
+        {
+            _selectedIndex = await JsInvokeAsync<int>("matBlazor.matList.getSelectedIndex", this.Ref);
+            return _selectedIndex;
+        }
+
+        /// <summary>
+        /// Sets the selected item in the list by index.
+        /// </summary>
+        /// <param name="index">The index of the item to select.</param>
+        public async Task SetSelectedIndex(int index)
+        {
+            if (_selectedIndex != index)
+            {
+                await JsInvokeAsync<object>("matBlazor.matList.setSelectedIndex", this.Ref, index);
+                _selectedIndex = index;
+            }
+        }
+
         protected async override Task OnFirstAfterRenderAsync()
         {
             await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matList.init", this.Ref, new MatListJsOptions()
+            await JsInvokeAsync<object>("matBlazor.matList.init", this.Ref, new MatListJsOptions()
             {
                 SingleSelection = SingleSelection
             });

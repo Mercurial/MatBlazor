@@ -1,37 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatRadioButton
+namespace MatBlazor
 {
-    public class BaseMatRadioButton : BaseMatComponent
+    /// <summary>
+    /// Buttons communicate an action a user can take. They are typically placed throughout your UI, in places like dialogs, forms, cards, and toolbars.
+    /// </summary>
+    public class BaseMatRadioButton : BaseMatDomComponent
     {
-        protected ElementRef FormFieldRef;
+        [CascadingParameter()]
+        protected BaseMatRadioGroup Group { get; set; }
 
-        private bool _checked;
+        protected ElementReference FormFieldRef;
+
         private bool _disabled;
 
-        [Parameter]
-        public bool Checked
+
+        protected bool Checked
         {
-            get => _checked;
-            set
-            {
-                if (value != _checked)
-                {
-                    _checked = value;
-                    CheckedChanged?.Invoke(value);
-                }
-            }
+            get => Group.Value == Value;
         }
 
-
-        [Parameter]
-        public Action<bool> CheckedChanged { get; set; }
 
         [Parameter]
         public bool Disabled
@@ -40,7 +29,6 @@ namespace MatBlazor.Components.MatRadioButton
             set
             {
                 _disabled = value;
-                ClassMapper.MakeDirty();
             }
         }
 
@@ -48,20 +36,18 @@ namespace MatBlazor.Components.MatRadioButton
         public string Value { get; set; }
 
         [Parameter]
-        public string Name { get; set; }
-
-        [Parameter]
         public string Label { get; set; }
 
-        protected void OnChangeHandler(UIChangeEventArgs e)
+        protected void OnChangeHandler(ChangeEventArgs e)
         {
-            Checked = (bool) e.Value;
+            Group.Value = this.Value;
+            //Checked = (bool)e.Value;
         }
 
         protected async override Task OnFirstAfterRenderAsync()
         {
             await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matRadioButton.init", Ref, FormFieldRef);
+            await JsInvokeAsync<object>("matBlazor.matRadioButton.init", Ref, FormFieldRef);
         }
 
         public BaseMatRadioButton()

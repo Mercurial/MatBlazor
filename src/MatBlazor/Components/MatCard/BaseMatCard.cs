@@ -1,37 +1,29 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using MatBlazor.Helpers;
-using Microsoft.AspNetCore.Blazor;
-using Microsoft.AspNetCore.Components;
+﻿using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatCard
+namespace MatBlazor
 {
-    public class BaseMatCard : BaseMatComponent
+    /// <summary>
+    /// Card component for Blazor contain content and actions about a single subject. 
+    /// </summary>
+    public class BaseMatCard : BaseMatDomComponent
     {
-
         public BaseMatCard()
         {
             ClassMapper
+                .Add("mat-card")
                 .Add("mdc-card")
                 .If("mdc-card--stroked", () => this.Stroke);
         }
 
         [Parameter]
-        protected bool Stroke
+        public bool Stroke
         {
             get => _stroke;
-            set
-            {
-                _stroke = value;
-                ClassMapper.MakeDirty();
-            }
+            set { _stroke = value; }
         }
 
         [Parameter]
-        protected RenderFragment ChildContent { get; set; }
+        public RenderFragment ChildContent { get; set; }
 
 
         private bool _stroke;

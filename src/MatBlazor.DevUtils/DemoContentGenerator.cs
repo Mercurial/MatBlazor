@@ -7,23 +7,71 @@ using System.Web;
 using System.Xml;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Linq;
+using MatBlazor.DevUtils.Core;
 
 namespace MatBlazor.DevUtils
 {
     [TestFixture]
     public class DemoContentGenerator
     {
+
+
+        public void Run()
+        {
+            this.GenerateDocumentation();
+            this.GenerateNews();
+            this.GenerateSponsors();
+            this.Generate();
+        }
+
+
+        [Test]
+        public void GenerateDocumentation()
+        {
+            var config = Config.GetConfig();
+            var gen = new MatDocumenationGenerator(typeof(BaseMatDomComponent).Assembly,
+                Path.Combine(config.Path, "MatBlazor.Demo", "Doc"));
+            {
+            }
+            ;
+            gen.Generate();
+        }
+
+
+        [Test]
+        public void GenerateNews()
+        {
+            var gen = new MDInfoGenerator()
+            {
+                Header = "News",
+                TargetFile = "News.razor"
+            };
+            gen.Generate();
+        }
+
+
+        [Test]
+        public void GenerateSponsors()
+        {
+            var gen = new MDInfoGenerator()
+            {
+                Header = "Sponsors & Backers",
+                TargetFile = "Sponsors.razor"
+            };
+            gen.Generate();
+        }
+
+
         [Test]
         public void Generate()
         {
-
             string filterFileName = null;
-
 
 
             var countAll = 0;
             var countChanged = 0;
-            
+
 
             var config = Config.GetConfig();
             var dirInfo = new DirectoryInfo(config.Path);
@@ -71,8 +119,6 @@ namespace MatBlazor.DevUtils
                 });
 
 
-                
-
                 if (content2 != content)
                 {
                     File.WriteAllText(fileInfo.FullName, content2);
@@ -88,7 +134,6 @@ namespace MatBlazor.DevUtils
 
         private string PrepareSourceCode(string s)
         {
-            return "";
             return $@"<BlazorFiddle Template=""MatBlazor"" Code=@(@""{s.Replace("\"", "\"\"")}"")></BlazorFiddle>";
         }
 
@@ -118,9 +163,9 @@ namespace MatBlazor.DevUtils
 
             s = sb.ToString();
 
-            
 
-            return $"<div style=\"white-space: pre-wrap;\">@((MarkupString) \"{s}\")</div><a href=\"https://localhost:44367/t-MatBlazor/?f={f}\">Test</a>";
+            return
+                $"<div style=\"white-space: pre-wrap;\">@((MarkupString) \"{s}\")</div><a href=\"https://localhost:44367/t-MatBlazor/?f={f}\">Test</a>";
         }
     }
 }

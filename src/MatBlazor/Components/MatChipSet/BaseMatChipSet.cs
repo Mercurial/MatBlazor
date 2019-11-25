@@ -1,22 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 
-namespace MatBlazor.Components.MatChipSet
+namespace MatBlazor
 {
-    public class BaseMatChipSet : BaseMatComponent
+    public class BaseMatChipSet : BaseMatDomComponent
     {
         [Parameter]
-        protected RenderFragment ChildContent { get; set; }
+        public RenderFragment ChildContent { get; set; }
 
         protected async override Task OnFirstAfterRenderAsync()
         {
             await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matChipSet.init", Ref);
+            await JsInvokeAsync<object>("matBlazor.matChipSet.init", Ref);
         }
     }
 }

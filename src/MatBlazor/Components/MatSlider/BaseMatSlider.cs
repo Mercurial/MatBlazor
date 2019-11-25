@@ -1,33 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using MatBlazor.Components.Base;
-using Microsoft.AspNetCore.Blazor;
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 
-namespace MatBlazor.Components.MatSlider
+namespace MatBlazor
 {
-    public class BaseMatSlider : BaseMatComponent
+    /// <summary>
+    /// Sliders let users select from a range of values by moving the slider thumb. 
+    /// </summary>
+    public class BaseMatSlider : BaseMatDomComponent
     {
         protected JsHelper jsHelper;
 
         private decimal _value;
 
-        protected async override Task OnFirstAfterRenderAsync()
-        {
-            await base.OnFirstAfterRenderAsync();
-            await Js.InvokeAsync<object>("matBlazor.matSlider.init", Ref, new DotNetObjectRef(jsHelper));
-        }
+
+        private DotNetObjectReference<JsHelper> dotNetObjectRef;
 
         public BaseMatSlider()
         {
             jsHelper = new JsHelper(this);
+            
             ClassMapper
                 .Add("mdc-slider")
-                .If("mdc-slider--discrete", () => Discrete)
-                ;
+                .If("mdc-slider--discrete", () => Discrete);
+            CallAfterRender(async () =>
+            {
+                dotNetObjectRef = dotNetObjectRef??CreateDotNetObjectRef(jsHelper);
+                await JsInvokeAsync<object>("matBlazor.matSlider.init", Ref, dotNetObjectRef);
+            });
+        }
+
+        public override void Dispose()
+        {
+            base.Dispose();
+            DisposeDotNetObjectRef(dotNetObjectRef);
         }
 
 
@@ -44,6 +51,7 @@ namespace MatBlazor.Components.MatSlider
         public bool Discrete { get; set; }
 
         [Parameter]
+        [Obsolete("Freezed while bug in Blazor")]
         public decimal Step { get; set; }
 
         [Parameter]
@@ -59,13 +67,13 @@ namespace MatBlazor.Components.MatSlider
                 if (value != _value)
                 {
                     _value = value;
-                    ValueChanged?.Invoke(value);
+                    ValueChanged.InvokeAsync(value);
                 }
             }
         }
 
         [Parameter]
-        public Action<decimal> ValueChanged { get; set; }
+        public EventCallback<decimal> ValueChanged { get; set; }
 
         public class JsHelper
         {
